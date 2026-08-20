@@ -17,9 +17,14 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.stdin.reconfigure(encoding="utf-8")
 
 TOKEN = ""
-for line in open(".env", encoding="utf-8"):
-    if line.startswith("SAKURA_AI_TOKEN="):
-        TOKEN = line.split("=", 1)[1].strip()
+try:
+    for line in open(".env", encoding="utf-8"):
+        if line.startswith("SAKURA_AI_TOKEN="):
+            TOKEN = line.split("=", 1)[1].strip()
+except FileNotFoundError:
+    sys.exit(".env がありません。.env.example をコピーして .env にし、トークンを貼ってください")
+if not TOKEN:
+    sys.exit(".env に SAKURA_AI_TOKEN= の行がありません")
 
 MODEL = "preview/gemma-4-31B-it"
 

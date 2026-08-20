@@ -13,9 +13,14 @@ sys.stdout.reconfigure(encoding="utf-8")  # Windows のコンソールで日本�
 
 # .env ファイルから、さくらのAI Engine のトークンを読む
 TOKEN = ""
-for line in open(".env", encoding="utf-8"):
-    if line.startswith("SAKURA_AI_TOKEN="):
-        TOKEN = line.split("=", 1)[1].strip()
+try:
+    for line in open(".env", encoding="utf-8"):
+        if line.startswith("SAKURA_AI_TOKEN="):
+            TOKEN = line.split("=", 1)[1].strip()
+except FileNotFoundError:
+    sys.exit(".env がありません。.env.example をコピーして .env にし、トークンを貼ってください")
+if not TOKEN:
+    sys.exit(".env に SAKURA_AI_TOKEN= の行がありません")
 
 # AI に送る内容。messages が会話の中身、model がどのAIに聞くか
 body = {
