@@ -13,7 +13,8 @@ import urllib.error
 import urllib.request
 
 sys.stdout.reconfigure(encoding="utf-8")
-sys.stdin.reconfigure(encoding="utf-8")  # この2行がないと Windows で日本語が化けます
+sys.stderr.reconfigure(encoding="utf-8")
+sys.stdin.reconfigure(encoding="utf-8")  # この3行がないと Windows で日本語が化けます
 
 TOKEN = ""
 try:

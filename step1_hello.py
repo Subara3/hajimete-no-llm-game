@@ -10,6 +10,7 @@ import sys
 import urllib.request
 
 sys.stdout.reconfigure(encoding="utf-8")  # Windows のコンソールで日本語を化けさせない
+sys.stderr.reconfigure(encoding="utf-8")
 
 # .env ファイルから、さくらのAI Engine のトークンを読む
 TOKEN = ""
