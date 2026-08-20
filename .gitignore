@@ -4,3 +4,6 @@ __pycache__/
 logs/server.log
 記事_*.md
 記事スクショ/
+web/app/config.php
+web/app/data/
+web/

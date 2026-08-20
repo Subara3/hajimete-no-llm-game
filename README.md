@@ -3,6 +3,8 @@
 言葉で門番を説得して、門を開けさせる。それだけのゲームです。
 中身は、さくらのAI Engine（無料枠）で動く LLM ゲームの、たぶんいちばん小さいお手本です。
 
+遊べる版はこちら → **https://subara3.com/monban/**
+
 ![プレイ画面](screenshots/play.jpg)
 
 - **pip install は要りません。** Python に最初から入っているものだけで動きます
