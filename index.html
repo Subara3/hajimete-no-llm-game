@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>門番</title>
+<style>
+  :root {
+    --ishi: #17140f;
+    --ishi-akarui: #2b2419;
+    --hi: #e8a33d;
+    --moji: #e8ded0;
+    --kage: #0b0908;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    background: radial-gradient(120% 90% at 50% 0%, var(--ishi-akarui), var(--ishi) 60%, var(--kage));
+    color: var(--moji);
+    font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+    display: flex; justify-content: center; padding: 24px 16px 40px;
+  }
+  .ba { width: 100%; max-width: 640px; }
+
+  h1 {
+    font-size: 15px; letter-spacing: .5em; text-align: center;
+    color: #8a7c63; font-weight: normal; margin: 0 0 20px;
+  }
+
+  /* 門 */
+  .mon {
+    position: relative; height: 190px; border-radius: 6px 6px 0 0;
+    background: linear-gradient(#2a2318, #171309);
+    box-shadow: inset 0 0 60px #000; overflow: hidden;
+    border: 1px solid #3a3122;
+  }
+  .tobira {
+    position: absolute; top: 0; bottom: 0; width: 50%; z-index: 1;
+    background: repeating-linear-gradient(90deg, #3b3122 0 22px, #332a1d 22px 24px);
+    transition: transform 1.6s cubic-bezier(.2,.8,.2,1);
+    box-shadow: inset 0 0 40px #000;
+  }
+  .tobira.hidari { left: 0; border-right: 2px solid #14100a; }
+  .tobira.migi { right: 0; }
+  /* 扉を留めている鉄の帯と鋲 */
+  .tobira::before, .tobira::after {
+    content: ""; position: absolute; left: 0; right: 0; height: 13px;
+    background: linear-gradient(#544936, #2b2318);
+    border-top: 1px solid #6b5c40;
+    box-shadow: 0 2px 6px rgba(0,0,0,.6);
+  }
+  .tobira::before { top: 34px; }
+  .tobira::after { bottom: 42px; }
+  /* 門を囲う石枠 */
+  .mon::after {
+    content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+    border-radius: 6px 6px 0 0;
+    box-shadow: inset 0 0 0 9px #241d14, inset 0 0 0 10px #100d09, inset 0 0 46px #000;
+  }
+  .aita .tobira.hidari { transform: translateX(-92%); }
+  .aita .tobira.migi { transform: translateX(92%); }
+  .hikari {
+    position: absolute; inset: 0; z-index: 0; opacity: 0; transition: opacity 1.8s ease 0.6s;
+    background: radial-gradient(38% 62% at 50% 64%, #fff6e0, #f0c14b 34%, rgba(232,163,61,.22) 68%, transparent 82%);
+  }
+  .aita .hikari { opacity: .92; }
+
+  /* 門番 */
+  .monban {
+    position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+    width: 96px; height: 150px; z-index: 2;
+    transition: opacity 1.2s ease, transform 1.2s ease;
+  }
+  .aita .monban { opacity: 0; transform: translateX(-260%); }
+
+  /* セリフ */
+  .serifu {
+    margin: 18px 0 0; padding: 18px 20px; min-height: 86px;
+    background: rgba(20,16,11,.72); border: 1px solid #3a3122;
+    border-left: 3px solid var(--hi);
+    font-size: 17px; line-height: 1.9;
+  }
+  .serifu .namae { color: #8a7c63; font-size: 13px; letter-spacing: .2em; display: block; margin-bottom: 6px; }
+  .serifu.matte { color: #7d735f; }
+
+  /* 心証 */
+  .meter-gyou { display: flex; align-items: center; gap: 12px; margin-top: 18px; font-size: 13px; color: #8a7c63; }
+  .meter { flex: 1; height: 10px; background: #241d14; border: 1px solid #3a3122; position: relative; overflow: hidden; }
+  .meter i {
+    display: block; height: 100%; width: 30%;
+    background: linear-gradient(90deg, #7c2d2d, #c8791f 55%, #f0c14b);
+    transition: width .9s cubic-bezier(.2,.8,.2,1);
+  }
+  .meter .sen { position: absolute; top: -3px; bottom: -3px; left: 80%; width: 1px; background: #f0c14b; opacity: .6; }
+  .kazu { min-width: 74px; text-align: right; font-variant-numeric: tabular-nums; }
+  .kazu b { color: var(--moji); font-size: 17px; font-weight: normal; }
+  .delta { color: var(--hi); margin-left: 6px; opacity: 0; transition: opacity .4s; }
+  .delta.deru { opacity: 1; }
+  .delta.sagaru { color: #c05b4a; }
+
+  /* 松明（残り回数） */
+  .taimatsu { display: flex; gap: 8px; margin-top: 14px; justify-content: center; }
+  .taimatsu span {
+    width: 8px; height: 14px; border-radius: 50% 50% 40% 40%;
+    background: radial-gradient(circle at 50% 70%, #ffe08a, #e8a33d 55%, #a34a12);
+    box-shadow: 0 0 10px rgba(232,163,61,.7);
+    transition: opacity .6s, box-shadow .6s;
+  }
+  .taimatsu span.kieta { background: #2a2318; box-shadow: none; opacity: .5; }
+
+  /* 入力 */
+  form { display: flex; gap: 10px; margin-top: 22px; }
+  input[type=text] {
+    flex: 1; padding: 13px 14px; font-size: 16px; font-family: inherit;
+    background: #100d09; color: var(--moji);
+    border: 1px solid #3a3122; border-radius: 3px;
+  }
+  input[type=text]:focus { outline: none; border-color: var(--hi); }
+  button {
+    padding: 13px 22px; font-size: 15px; font-family: inherit; cursor: pointer;
+    background: #3a3122; color: var(--moji); border: 1px solid #55492f; border-radius: 3px;
+  }
+  button:hover:not(:disabled) { background: #4a3f2a; }
+  button:disabled { opacity: .45; cursor: default; }
+
+  .owari { margin-top: 22px; text-align: center; font-size: 19px; line-height: 2; display: none; }
+  .owari.deru { display: block; }
+  .owari small { display: block; font-size: 13px; color: #8a7c63; margin-top: 8px; }
+  .owari button { margin-top: 14px; }
+
+  footer { margin-top: 34px; text-align: center; font-size: 12px; color: #6b6250; line-height: 1.9; }
+</style>
+</head>
+<body>
+<div class="ba">
+  <h1>門　番</h1>
+
+  <div class="mon" id="mon">
+    <div class="hikari"></div>
+    <div class="tobira hidari"></div>
+    <div class="tobira migi"></div>
+    <svg class="monban" viewBox="0 0 96 150" aria-label="門番">
+      <g fill="#0d0b07">
+        <rect x="70" y="6" width="3" height="144"/>
+        <path d="M62 10 L81 10 L74 26 L69 26 Z"/>
+        <ellipse cx="48" cy="30" rx="16" ry="17"/>
+        <path d="M32 30 Q48 12 64 30 L64 34 Q48 26 32 34 Z"/>
+        <path d="M28 52 Q48 42 68 52 L74 106 Q48 116 22 106 Z"/>
+        <rect x="34" y="104" width="12" height="46"/>
+        <rect x="52" y="104" width="12" height="46"/>
+      </g>
+      <g fill="#e8a33d" opacity=".85">
+        <circle cx="42" cy="30" r="1.7"/>
+        <circle cx="54" cy="30" r="1.7"/>
+      </g>
+    </svg>
+  </div>
+
+  <p class="serifu" id="serifu"><span class="namae">門番</span>ここから先は通せん。用件を申せ。</p>
+
+  <div class="meter-gyou">
+    <span>心証</span>
+    <span class="meter"><i id="bar"></i><span class="sen"></span></span>
+    <span class="kazu"><b id="kazu">30</b><span class="delta" id="delta"></span></span>
+  </div>
+  <div class="taimatsu" id="taimatsu"></div>
+
+  <form id="form">
+    <input type="text" id="kotoba" maxlength="200" placeholder="門番に話しかける" autocomplete="off">
+    <button type="submit" id="okuru">言う</button>
+  </form>
+
+  <div class="owari" id="owari"></div>
+
+  <footer>
+    さくらのAI Engine（preview/gemma-4-31B-it）で門番が考えています<br>
+    Python の標準ライブラリだけで動いています
+  </footer>
+</div>
+
+<script>
+const WIN = 80, TURN = 7;
+let asobenai = false;
+
+const $ = (id) => document.getElementById(id);
+const taimatsu = $("taimatsu");
+for (let i = 0; i < TURN; i++) taimatsu.appendChild(document.createElement("span"));
+
+function meter(kokoro, delta) {
+  $("bar").style.width = kokoro + "%";
+  $("kazu").textContent = kokoro;
+  if (delta !== undefined && delta !== 0) {
+    const d = $("delta");
+    d.textContent = (delta > 0 ? "+" : "") + delta;
+    d.className = "delta deru" + (delta < 0 ? " sagaru" : "");
+    setTimeout(() => { d.className = "delta"; }, 2200);
+  }
+}
+
+function nokori(left) {
+  [...taimatsu.children].forEach((h, i) => {
+    h.className = i < left ? "" : "kieta";
+  });
+}
+
+function iu(text, matte) {
+  $("serifu").className = matte ? "serifu matte" : "serifu";
+  $("serifu").innerHTML = '<span class="namae">門番</span>' + text;
+}
+
+function owaru(state) {
+  asobenai = true;
+  $("kotoba").disabled = true;
+  $("okuru").disabled = true;
+  $("form").style.display = "none";
+  const o = $("owari");
+  const kotoba = {
+    open: "門が、重い音を立てて開いた。<small>門番「行け。二度と振り返るな」</small>",
+    lose: "追い返された。<small>門番「失せろ。次はない」</small>",
+    timeup: "日が暮れた。門は閉じられる。<small>門番「明日また来い。気が向いたら聞いてやる」</small>",
+  }[state];
+  o.innerHTML = kotoba + '<br><button id="mouikkai">もう一度</button>';
+  o.className = "owari deru";
+  if (state === "open") $("mon").className = "mon aita";
+  $("mouikkai").onclick = async () => {
+    const r = await fetch("/reset", { method: "POST", body: "{}" }).then(x => x.json());
+    asobenai = false;
+    $("kotoba").disabled = false; $("okuru").disabled = false; $("kotoba").value = "";
+    $("form").style.display = "flex";
+    o.className = "owari"; $("mon").className = "mon";
+    meter(r.kokoro); nokori(TURN);
+    iu("ここから先は通せん。用件を申せ。");
+    $("kotoba").focus();
+  };
+}
+
+$("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (asobenai) return;
+  const text = $("kotoba").value.trim();
+  if (!text) return;
+
+  $("kotoba").disabled = true; $("okuru").disabled = true;
+  iu("……（門番は、あなたの言葉を聞いている）", true);
+
+  let r;
+  try {
+    r = await fetch("/talk", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text })
+    }).then(x => x.json());
+  } catch (err) {
+    iu("……（声が届かなかった。もう一度）", true);
+    $("kotoba").disabled = false; $("okuru").disabled = false;
+    return;
+  }
+
+  $("kotoba").value = "";
+  iu(r.serifu);
+  meter(r.kokoro, r.delta);
+  nokori(r.left);
+
+  if (r.state !== "playing") {
+    setTimeout(() => owaru(r.state), 900);
+  } else {
+    $("kotoba").disabled = false; $("okuru").disabled = false; $("kotoba").focus();
+  }
+});
+
+meter(30); nokori(TURN); $("kotoba").focus();
+</script>
+</body>
+</html>
