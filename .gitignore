@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 logs/server.log
 記事_*.md
+記事スクショ/
